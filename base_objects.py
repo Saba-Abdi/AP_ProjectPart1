@@ -80,7 +80,8 @@ class User:
         elif user_position == 'doctor':
             c.execute("SELECT * FROM doctors WHERE username = ?", (username,))
         elif user_position == 'secretary':
-            c.execute("SELECT * FROM secretaries WHERE username = ?", (username,))
+            c.execute("SELECT * FROM secretaries WHERE username = ?",
+                      (username,))
         user_info = c.fetchone()
         conn.close()
         return user_info
@@ -102,7 +103,7 @@ class Clinic:
         self.contact_info = contact_info
         self.services = services
         self.availability = availability
-        self.fees=fees
+        self.fees = fees
 
     @staticmethod
     def clinic_table_creation():
@@ -123,21 +124,21 @@ class Clinic:
         conn.close()
 
     @classmethod
-    def add_clinic(cls, name, address, contact_info, services,availability,fees):
+    def add_clinic(cls, name, address, contact_info, services, availability,
+                   fees):
         cls.clinic_table_creation()
         conn = sqlite3.connect('ap_database.db')
         c = conn.cursor()
-        services_str=','.join(services)
-        fee_str=','.join(fees)
+        services_str = ','.join(services)
+        fee_str = ','.join(fees)
         c.execute(
             'INSERT INTO clinics (name, address, contact_info, services,beds_available,fees) VALUES (?,?,?,?,?,?)',
-            (name, address, contact_info, services_str, availability,fee_str))
+            (name, address, contact_info, services_str, availability, fee_str))
         clinic_id = c.lastrowid
         conn.commit()
         conn.close()
-        return cls(clinic_id, name, address, contact_info, services,availability,fees)
-
-
+        return cls(clinic_id, name, address, contact_info, services,
+                   availability, fees)
 
     def update_clinic_info(self):
         pass
@@ -179,13 +180,15 @@ class Notification:
 
 
 class Insurance:
-    def __init__(self, name, contact_info,gp_coverage,heart_coverage,dental_coverage,plastic_coverage):
+    def __init__(self, name, contact_info, gp_coverage, heart_coverage,
+                 dental_coverage, plastic_coverage):
         self.name = name
         self.contact_info = contact_info
-        self.gp_coverage=gp_coverage
-        self.heart_coverage=heart_coverage
-        self.dental_coverage=dental_coverage
-        self.plastic_coverage=plastic_coverage
+        self.gp_coverage = gp_coverage
+        self.heart_coverage = heart_coverage
+        self.dental_coverage = dental_coverage
+        self.plastic_coverage = plastic_coverage
+
     @staticmethod
     def insurance_table_creation():
         conn = sqlite3.connect('ap_database.db')
@@ -203,23 +206,27 @@ class Insurance:
                 ''')
         conn.commit()
         conn.close()
+
     @classmethod
-    def add_insurance(cls, name, contact_info, gp_coverage, heart_coverage,dental_coverage,plastic_coverage):
-        cls.clinic_table_creation()
+    def add_insurance(cls, name, contact_info, gp_coverage, heart_coverage,
+                      dental_coverage, plastic_coverage):
+        cls.insurance_table_creation()
         conn = sqlite3.connect('ap_database.db')
         c = conn.cursor()
         c.execute(
-            'INSERT INTO clinics (name, contact_info,gp_coverage,heart_coverage,dental_coverage,plastic_coverage) VALUES (?,?,?,?,?,?,?)',
-            (name, contact_info, gp_coverage, heart_coverage,dental_coverage,plastic_coverage))
-        insurance_id = c.lastrowid
+            'INSERT INTO insurances (name, contact_info,gp_coverage,heart_coverage,dental_coverage,plastic_coverage) VALUES (?,?,?,?,?,?)',
+            (name, contact_info, gp_coverage, heart_coverage, dental_coverage,
+             plastic_coverage))
         conn.commit()
         conn.close()
-        return cls(insurance_id, name, contact_info, gp_coverage, heart_coverage,dental_coverage,plastic_coverage)
+        return cls(name, contact_info, gp_coverage,
+                   heart_coverage, dental_coverage, plastic_coverage)
 
 
 class Payment:
-    def __init__(self, user_id, cvv2, expiration_date, password):
+    def __init__(self, user_id, account_number, cvv2, expiration_date, password):
         self.user = user_id
+        self.account_number = account_number
         self.cvv2 = cvv2
         self.expiration_date = expiration_date
         self.password = password
@@ -232,6 +239,7 @@ class Payment:
                     CREATE TABLE payments (
                         payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER,
+                        account_number INTEGER,
                         cvv2 INTEGER,
                         expiration_date INTEGER,
                         password INTEGER
@@ -239,18 +247,18 @@ class Payment:
                 ''')
         conn.commit()
         conn.close()
+
     @classmethod
-    def add_payment(cls, payment_id, user_id, cvv2, expiration_date, password):
-        cls.clinic_table_creation()
+    def add_payment(cls, user_id, account_number, cvv2, expiration_date, password):
+        cls.payment_table_creation()
         conn = sqlite3.connect('ap_database.db')
         c = conn.cursor()
         c.execute(
-            'INSERT INTO clinics (payment_id, user_id, cvv2, expiration_date, password) VALUES (?,?,?,?,?)',
-            (payment_id, user_id, cvv2, expiration_date, password))
-        insurance_id = c.lastrowid
+            'INSERT INTO payments (user_id, account_number, cvv2, expiration_date, password) VALUES (?,?,?,?,?)',
+            (user_id, account_number, cvv2, expiration_date, password))
         conn.commit()
         conn.close()
-        return cls(user_id, cvv2, expiration_date, password)
-    
+        return cls(user_id, account_number, cvv2, expiration_date, password)
+
     def payment(self):
         pass
