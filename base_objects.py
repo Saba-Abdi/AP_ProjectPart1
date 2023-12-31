@@ -95,19 +95,49 @@ class User:
 class Clinic:
 
     def __init__(self, clinic_id, name, address, contact_info, services,
-                 availability, heart_fee, dental_fee, short_stay_fee):
+                 availability, fees):
         self.clinic_id = clinic_id
         self.name = name
         self.address = address
         self.contact_info = contact_info
         self.services = services
         self.availability = availability
-        self.heart_fee = heart_fee
-        self.dental_fee = dental_fee
-        self.short_stay_fee = short_stay_fee
+        self.fees=fees
 
-    def add_clinic(self):
-        pass
+    @staticmethod
+    def clinic_table_creation():
+        conn = sqlite3.connect('ap_database.db')
+        c = conn.cursor()
+        c.execute('''
+                    CREATE TABLE clinics (
+                        clinic_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name VARCHAR(255),
+                        address VARCHAR(511),
+                        contact_info INTEGER UNIQUE,
+                        services VARCHAR(255),
+                        beds_available INTEGER,
+                        fees VARCHAR(255)
+                    )
+                ''')
+        conn.commit()
+        conn.close()
+
+    @classmethod
+    def add_clinic(cls, name, address, contact_info, services,availability,fees):
+        cls.clinic_table_creation()
+        conn = sqlite3.connect('ap_database.db')
+        c = conn.cursor()
+        services_str=','.join(services)
+        fee_str=','.join(fees)
+        c.execute(
+            'INSERT INTO clinics (name, address, contact_info, services,beds_available,fees) VALUES (?,?,?,?,?,?)',
+            (name, address, contact_info, services_str, availability,fee_str))
+        clinic_id = c.lastrowid
+        conn.commit()
+        conn.close()
+        return cls(clinic_id, name, address, contact_info, services,availability,fees)
+
+
 
     def update_clinic_info(self):
         pass
@@ -149,25 +179,78 @@ class Notification:
 
 
 class Insurance:
-    def __init__(self, name, contact_info, heart_fee, dental_fee, short_stay_fee):
+    def __init__(self, name, contact_info,gp_coverage,heart_coverage,dental_coverage,plastic_coverage):
         self.name = name
         self.contact_info = contact_info
-        self.heart_fee = heart_fee
-        self.dental_fee = dental_fee
-        self.short_stay_fee = short_stay_fee
-
-    def coverage(self):
-        coverage_amounts = {'heart': self.heart_fee, 'dental': self.dental_fee,
-                            'short_stay': self.short_stay_fee}
+        self.gp_coverage=gp_coverage
+        self.heart_coverage=heart_coverage
+        self.dental_coverage=dental_coverage
+        self.plastic_coverage=plastic_coverage
+    @staticmethod
+    def insurance_table_creation():
+        conn = sqlite3.connect('ap_database.db')
+        c = conn.cursor()
+        c.execute('''
+                    CREATE TABLE insurances (
+                        insurance_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name VARCHAR(255),
+                        contact_info INTEGER UNIQUE,
+                        gp_coverage INTEGER,
+                        heart_coverage INTEGER,
+                        dental_coverage INTEGER,
+                        plastic_coverage INTEGER
+                    )
+                ''')
+        conn.commit()
+        conn.close()
+    @classmethod
+    def add_insurance(cls, name, contact_info, gp_coverage, heart_coverage,dental_coverage,plastic_coverage):
+        cls.clinic_table_creation()
+        conn = sqlite3.connect('ap_database.db')
+        c = conn.cursor()
+        c.execute(
+            'INSERT INTO clinics (name, contact_info,gp_coverage,heart_coverage,dental_coverage,plastic_coverage) VALUES (?,?,?,?,?,?,?)',
+            (name, contact_info, gp_coverage, heart_coverage,dental_coverage,plastic_coverage))
+        insurance_id = c.lastrowid
+        conn.commit()
+        conn.close()
+        return cls(insurance_id, name, contact_info, gp_coverage, heart_coverage,dental_coverage,plastic_coverage)
 
 
 class Payment:
-    def __init__(self, user_id, cvv2, expiration_date, password, captcha):
+    def __init__(self, user_id, cvv2, expiration_date, password):
         self.user = user_id
         self.cvv2 = cvv2
         self.expiration_date = expiration_date
         self.password = password
-        self.captcha = captcha
 
+    @staticmethod
+    def payment_table_creation():
+        conn = sqlite3.connect('ap_database.db')
+        c = conn.cursor()
+        c.execute('''
+                    CREATE TABLE payments (
+                        payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER,
+                        cvv2 INTEGER,
+                        expiration_date INTEGER,
+                        password INTEGER
+                    )
+                ''')
+        conn.commit()
+        conn.close()
+    @classmethod
+    def add_payment(cls, payment_id, user_id, cvv2, expiration_date, password):
+        cls.clinic_table_creation()
+        conn = sqlite3.connect('ap_database.db')
+        c = conn.cursor()
+        c.execute(
+            'INSERT INTO clinics (payment_id, user_id, cvv2, expiration_date, password) VALUES (?,?,?,?,?)',
+            (payment_id, user_id, cvv2, expiration_date, password))
+        insurance_id = c.lastrowid
+        conn.commit()
+        conn.close()
+        return cls(user_id, cvv2, expiration_date, password)
+    
     def payment(self):
         pass
