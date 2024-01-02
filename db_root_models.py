@@ -1,5 +1,24 @@
 from base_objects import *
 
+clinic1 = Clinic.add_clinic("Clinic A", "123 Main St", "123-456-7890", 0, True, False, True, False, 50, 0, 30, 0)
+clinic2 = Clinic.add_clinic("Clinic B", "456 Oak St", "987-654-3210", 0, False, True, False, True, 0, 60, 0, 40)
+clinic3 = Clinic.add_clinic("Health Center", "789 Elm St", "555-123-4567", 0, True, True, True, True, 45, 55, 25, 35)
+clinic4 = Clinic.add_clinic("Dental Clinic", "321 Pine St", "333-999-8888", 0, False, False, True, False, 0, 0, 40, 0)
+clinic5 = Clinic.add_clinic("Clinic C", "225 Main St", "231-824-9999", 0, True, False, True, False, 50, 0, 35, 0)
+clinic6 = Clinic.add_clinic("Clinic D", "128 Main St", "321-784-2316", 0, False, False, True, False, 0, 0, 95, 0)
+clinic7 = Clinic.add_clinic("Clinic E", "433 Main St", "222-979-7890", 0, True, True, True, True, 50, 65, 30, 32)
+clinic1.getting_clinic_availability()
+clinic2.getting_clinic_availability()
+clinic3.getting_clinic_availability()
+clinic4.getting_clinic_availability()
+clinic5.getting_clinic_availability()
+clinic6.getting_clinic_availability()
+clinic7.getting_clinic_availability()
+
+
+p1 = Payment.add_payment(1, 6037, 9, 605, 4545)
+i1 = Insurance.add_insurance('hel', '0930', 20)
+
 doctor1 = User.sign_up('Luke Evans', 'luke58', 'l.evans@gmail.com', '58911958', 'doctor')
 doctor2 = User.sign_up('Mark Black', 'mark15', 'm.black@gmail.com', '1578578', 'doctor')
 doctor3 = User.sign_up('Gina Watson', 'gina79', 'ginawatson@gmail.com', '79844567',
@@ -24,8 +43,7 @@ doctor12 = User.sign_up('Walter White', 'walter56', 'wwh9119@gmail.com', '569888
                         'doctor')
 doctor13 = User.sign_up('Hailey helder', 'hailey45', 'h.h.b78@gmail.com', 'hail4545',
                         'doctor')
-doctor14 = User.sign_up('Natasha Romanov', 'natasha99', 'natroman@gmail.com', 'agent999',
-                        'doctor')
+
 
 patient1 = User.sign_up('Liam Harrison', 'liam54', 'liamharrison@gamil.com', 'li5445li',
                         'patient')
