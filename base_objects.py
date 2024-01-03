@@ -92,34 +92,7 @@ class User:
         conn.close()
         return user_info
 
-    def update_profile(self, alter, user_position, username, new_value):
-        conn = sqlite3.connect('ap_database.db')
-        c = conn.cursor()
 
-        if user_position == 'patient':
-            if alter == 'new_email':
-                c.execute("UPDATE patients SET email = ? WHERE username = ?", (new_value, username))
-            elif alter == 'new_password':
-                c.execute("UPDATE patients SET password = ? WHERE username = ?", (new_value, username))
-            elif alter == 'new_name':
-                c.execute("UPDATE patients SET name = ? WHERE username = ?", (new_value, username))
-        elif user_position == 'doctor':
-            if alter == 'new_email':
-                c.execute("UPDATE doctors SET email = ? WHERE username = ?", (new_value, username))
-            elif alter == 'new_password':
-                c.execute("UPDATE doctors SET password = ? WHERE username = ?", (new_value, username))
-            elif alter == 'new_name':
-                c.execute("UPDATE doctors SET name = ? WHERE username = ?", (new_value, username))
-        elif user_position == 'secretary':
-            if alter == 'new_email':
-                c.execute("UPDATE secretaries SET email = ? WHERE username = ?", (new_value, username))
-            elif alter == 'new_password':
-                c.execute("UPDATE secretaries SET password = ? WHERE username = ?", (new_value, username))
-            elif alter == 'new_name':
-                c.execute("UPDATE secretaries SET name = ? WHERE username = ?", (new_value, username))
-
-        conn.commit()
-        conn.close()
     def meetings(self):
         pass
 
