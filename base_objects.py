@@ -91,6 +91,7 @@ class User:
         user_info = c.fetchone()
         conn.close()
         return user_info
+
     def update_profile(self, alter, user_position, username, new_value):
         conn = sqlite3.connect('ap_database.db')
         c = conn.cursor()
@@ -116,8 +117,9 @@ class User:
                 c.execute("UPDATE secretaries SET password = ? WHERE username = ?", (new_value, username))
             elif alter == 'new_name':
                 c.execute("UPDATE secretaries SET name = ? WHERE username = ?", (new_value, username))
-    
 
+        conn.commit()
+        conn.close()
     def meetings(self):
         pass
 
@@ -210,12 +212,59 @@ class Clinic:
 
 
 class Appointment:
-    def __init__(self, status, datetime, user_id, clinic_id, appointment_id):
+    def __init__(self,appointment_id,status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id):
         self.status = status
-        self.datetime = datetime
-        self.user_id = user_id
-        self.clinic_id = clinic_id
-        self.appointment_id = appointment_id
+        self.appointment_id=appointment_id
+        self.reservation_date=reservation_date
+        self.payment_amount=payment_amount
+        self.patient_id=patient_id
+        self.clinic_id=clinic_id
+        self.doctor_id=doctor_id
+        self.insurance_id=insurance_id
+        self.payment_id=payment_id
+
+
+    @staticmethod
+    def appointment_table_creation():
+        conn = sqlite3.connect('ap_database.db')
+        c = conn.cursor()
+        c.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='appointments';")
+        if c.fetchone() is None:
+            c.execute('''
+                        CREATE TABLE appointments (
+                            appointment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            status VARCHAR(255),
+                            reservation_date INTEGER,
+                            payment_amount INTEGER,
+                            patient_id INTEGER,
+                            clinic_id INTEGER,
+                            doctor_id INTEGER,
+                            insurance_id INTEGER,
+                            payment_id INTEGER,
+                            FOREIGN KEY(patient_id) REFERENCES patients(user_id),
+                            FOREIGN KEY(clinic_id) REFERENCES clinics(clinic_id),
+                            FOREIGN KEY(doctor_id) REFERENCES doctors(user_id),
+                            FOREIGN KEY(insurance_id) REFERENCES insurances(insurance_id),
+                            FOREIGN KEY(payment_id) REFERENCES payments(payment_id)
+                        )
+                    ''')
+            conn.commit()
+            conn.close()
+
+    @classmethod
+    def add_appointment(cls, status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id):
+        cls.appointment_table_creation()
+        conn = sqlite3.connect('ap_database.db')
+        c = conn.cursor()
+        c.execute(
+            'INSERT INTO appointments (status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id) VALUES (?,?,?,?,?,?,?,?)',
+            (status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id))
+        appointment_id = c.lastrowid
+        conn.commit()
+        conn.close()
+        return cls(appointment_id, status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id)
+    
 
     def register_appointment(self):
         pass
