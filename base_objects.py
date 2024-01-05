@@ -201,14 +201,59 @@ class Clinic:
         conn.commit()
         conn.close()
 
-    def update_clinic_info(self):
-        pass
+    def update_clinic_info(cls, clinic_id, name=None, address=None, contact_info=None, availability=None, gp=None, heart=None, dental=None, plastic=None, gp_fee=None, heart_fee=None, dental_fee=None, plastic_fee=None):
+        conn = sqlite3.connect('ap_database.db')
+        c = conn.cursor()
+
+        if name is not None:
+            c.execute('UPDATE clinics SET name = ? WHERE clinic_id = ?', (name, clinic_id))
+        if address is not None:
+            c.execute('UPDATE clinics SET address = ? WHERE clinic_id = ?', (address, clinic_id))
+        if contact_info is not None:
+            c.execute('UPDATE clinics SET contact_info = ? WHERE clinic_id = ?', (contact_info, clinic_id))
+        if availability is not None:
+            c.execute('UPDATE clinics SET beds_available = ? WHERE clinic_id = ?', (availability, clinic_id))
+   
+
+        conn.commit()
+        conn.close()
 
     def set_availability(self):
-        pass
+        get_data_url = "http://127.0.0.1:5000/slots" 
+        response = requests.get(get_data_url)
+
+        if response.status_code != 200:
+            raise Exception("The request was not successful!")
+        else:
+            json_data = response.json()
+
+        availability = json_data.get(str(self.clinic_id))  
+
+        if availability is not None:
+            conn = sqlite3.connect('ap_database.db')
+            c = conn.cursor()
+            c.execute('UPDATE clinics SET beds_available = ? WHERE clinic_id = ?', (availability, self.clinic_id))
+            conn.commit()
+            conn.close()
+
 
     def view_appointments(self):
-        pass
+        get_data_url = "http://127.0.0.1:5000/appointments"  
+        response = requests.get(get_data_url)
+
+        if response.status_code != 200:
+            raise Exception("The request was not successful!")
+        else:
+            json_data = response.json()
+
+        appointments = json_data.get(str(self.clinic_id)) 
+
+        if appointments is not None:
+            for appointment in appointments:
+                print(f"Appointment ID: {appointment['id']}, Patient: {appointment['patient_name']}, Date: {appointment['date']}, Time: {appointment['time']}")
+        else:
+            print("No appointments found for this clinic.")
+
 
 
 class Appointment:
