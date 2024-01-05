@@ -1,5 +1,6 @@
 import sqlite3
 import requests
+from datetime import datetime
 
 
 class User:
@@ -54,7 +55,6 @@ class User:
             conn.commit()
             conn.close()
 
-
     @classmethod
     def sign_up(cls, name, username, email, password, user_position):
         cls.user_table_creation(user_position)
@@ -98,35 +98,45 @@ class User:
 
         if user_position == 'patient':
             if alter == 'new_email':
-                c.execute("UPDATE patients SET email = ? WHERE username = ?", (new_value, username))
+                c.execute("UPDATE patients SET email = ? WHERE username = ?",
+                          (new_value, username))
             elif alter == 'new_password':
-                c.execute("UPDATE patients SET password = ? WHERE username = ?", (new_value, username))
+                c.execute("UPDATE patients SET password = ? WHERE username = ?",
+                          (new_value, username))
             elif alter == 'new_name':
-                c.execute("UPDATE patients SET name = ? WHERE username = ?", (new_value, username))
+                c.execute("UPDATE patients SET name = ? WHERE username = ?",
+                          (new_value, username))
         elif user_position == 'doctor':
             if alter == 'new_email':
-                c.execute("UPDATE doctors SET email = ? WHERE username = ?", (new_value, username))
+                c.execute("UPDATE doctors SET email = ? WHERE username = ?",
+                          (new_value, username))
             elif alter == 'new_password':
-                c.execute("UPDATE doctors SET password = ? WHERE username = ?", (new_value, username))
+                c.execute("UPDATE doctors SET password = ? WHERE username = ?",
+                          (new_value, username))
             elif alter == 'new_name':
-                c.execute("UPDATE doctors SET name = ? WHERE username = ?", (new_value, username))
+                c.execute("UPDATE doctors SET name = ? WHERE username = ?",
+                          (new_value, username))
         elif user_position == 'secretary':
             if alter == 'new_email':
-                c.execute("UPDATE secretaries SET email = ? WHERE username = ?", (new_value, username))
+                c.execute("UPDATE secretaries SET email = ? WHERE username = ?",
+                          (new_value, username))
             elif alter == 'new_password':
-                c.execute("UPDATE secretaries SET password = ? WHERE username = ?", (new_value, username))
+                c.execute(
+                    "UPDATE secretaries SET password = ? WHERE username = ?",
+                    (new_value, username))
             elif alter == 'new_name':
-                c.execute("UPDATE secretaries SET name = ? WHERE username = ?", (new_value, username))
+                c.execute("UPDATE secretaries SET name = ? WHERE username = ?",
+                          (new_value, username))
 
-        conn.commit()
-        conn.close()
     def meetings(self):
         pass
 
 
 class Clinic:
 
-    def __init__(self, clinic_id, name, address, contact_info, availability, gp=False, heart=False, dental=False, plastic=False, gp_fee=0, heart_fee=0, dental_fee=0, plastic_fee=0):
+    def __init__(self, clinic_id, name, address, contact_info, availability,
+                 gp=False, heart=False, dental=False, plastic=False, gp_fee=0,
+                 heart_fee=0, dental_fee=0, plastic_fee=0):
         self.clinic_id = clinic_id
         self.name = name
         self.address = address
@@ -169,37 +179,21 @@ class Clinic:
             conn.close()
 
     @classmethod
-    def add_clinic(cls, name, address, contact_info, availability, gp, heart, dental, plastic, gp_fee, heart_fee,dental_fee, plastic_fee):
+    def add_clinic(cls, name, address, contact_info, availability, gp, heart,
+                   dental, plastic, gp_fee, heart_fee, dental_fee, plastic_fee):
         cls.clinic_table_creation()
         conn = sqlite3.connect('ap_database.db')
         c = conn.cursor()
         c.execute(
             'INSERT INTO clinics (name, address, contact_info, beds_available, gp, heart, dental,plastic, gp_fee, heart_fee,dental_fee, plastic_fee) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
-            (name, address, contact_info, availability, gp, heart, dental, plastic, gp_fee, heart_fee,dental_fee, plastic_fee))
+            (name, address, contact_info, availability, gp, heart, dental,
+             plastic, gp_fee, heart_fee, dental_fee, plastic_fee))
         clinic_id = c.lastrowid
         conn.commit()
         conn.close()
-        return cls(clinic_id, name, address, contact_info, availability, gp, heart, dental, plastic, gp_fee, heart_fee,dental_fee, plastic_fee)
-
-    def getting_clinic_availability(self):
-
-        get_data_url = "http://127.0.0.1:5000/slots"
-        response = requests.get(get_data_url)
-
-        if response.status_code != 200:
-            raise Exception("The request was not successful!")
-        else:
-            json_data = response.json()
-
-        conn = sqlite3.connect('ap_database.db')
-        c = conn.cursor()
-
-        for clinic_id, availability in json_data.items():
-            c.execute('UPDATE clinics SET beds_available = ? WHERE clinic_id = ?',
-                      (availability, clinic_id))
-
-        conn.commit()
-        conn.close()
+        return cls(clinic_id, name, address, contact_info, availability, gp,
+                   heart, dental, plastic, gp_fee, heart_fee, dental_fee,
+                   plastic_fee)
 
     def update_clinic_info(cls, clinic_id, name=None, address=None, contact_info=None, availability=None, gp=None, heart=None, dental=None, plastic=None, gp_fee=None, heart_fee=None, dental_fee=None, plastic_fee=None):
         conn = sqlite3.connect('ap_database.db')
@@ -257,17 +251,17 @@ class Clinic:
 
 
 class Appointment:
-    def __init__(self,appointment_id,status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id):
+    def __init__(self, appointment_id, status, reservation_date, payment_amount,
+                 patient_id, clinic_id, doctor_id, insurance_id, payment_id):
         self.status = status
-        self.appointment_id=appointment_id
-        self.reservation_date=reservation_date
-        self.payment_amount=payment_amount
-        self.patient_id=patient_id
-        self.clinic_id=clinic_id
-        self.doctor_id=doctor_id
-        self.insurance_id=insurance_id
-        self.payment_id=payment_id
-
+        self.appointment_id = appointment_id
+        self.reservation_date = reservation_date
+        self.payment_amount = payment_amount
+        self.patient_id = patient_id
+        self.clinic_id = clinic_id
+        self.doctor_id = doctor_id
+        self.insurance_id = insurance_id
+        self.payment_id = payment_id
 
     @staticmethod
     def appointment_table_creation():
@@ -298,21 +292,46 @@ class Appointment:
             conn.close()
 
     @classmethod
-    def add_appointment(cls, status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id):
+    def add_appointment(cls, status, reservation_date, payment_amount,
+                        patient_id, clinic_id, doctor_id, insurance_id,
+                        payment_id):
         cls.appointment_table_creation()
         conn = sqlite3.connect('ap_database.db')
         c = conn.cursor()
         c.execute(
             'INSERT INTO appointments (status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id) VALUES (?,?,?,?,?,?,?,?)',
-            (status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id))
+            (status, reservation_date, payment_amount, patient_id, clinic_id,
+             doctor_id, insurance_id, payment_id))
         appointment_id = c.lastrowid
         conn.commit()
         conn.close()
-        return cls(appointment_id, status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id)
-    
+        return cls(appointment_id, status, reservation_date, payment_amount,
+                   patient_id, clinic_id, doctor_id, insurance_id, payment_id)
 
-    def register_appointment(self):
-        pass
+    @staticmethod
+    def register_appointment(clinic_id, reserved_slots, database):
+        url = 'http://127.0.0.1:5000/reserve'
+        data = {'id': clinic_id, 'reserved': reserved_slots}
+        response = requests.post(url, json=data)
+
+        if response.status_code == 200:
+            result = response.json()
+            if result.get('success'):
+                remaining_slots = result.get('remaining_slots')
+                print(
+                    f"Reservation successful. Remaining slots for clinic {clinic_id}: {remaining_slots}")
+
+                # Update the local database dictionary
+                if str(clinic_id) in database:
+                    database[str(clinic_id)] = remaining_slots
+                    print(
+                        f"Updated local availability for clinic {clinic_id}: {database[str(clinic_id)]}")
+                else:
+                    print(f"Invalid clinic ID: {clinic_id}")
+            else:
+                print("Reservation failed. Invalid request.")
+        else:
+            print(f"Error: {response.status_code}")
 
     def cancel_appointment(self):
         pass
@@ -322,14 +341,18 @@ class Appointment:
 
 
 class Notification:
-    def __init__(self, notification_id, user_id, message, datetime):
-        self.notification_id = notification_id
+    def __init__(self, user_id, message, date_time):
         self.user_id = user_id
         self.message = message
-        self.datetime = datetime
+        self.date_time = date_time
 
-    def send_notification(self):
-        pass
+    @classmethod
+    def send_notification(cls, user_id):
+        message = f"Dear user {user_id}, your appointment is reserved."
+        current_datetime = datetime.now()
+        date = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        print(message)
+        return cls(user_id, message, date)
 
 
 class Insurance:
@@ -370,7 +393,8 @@ class Insurance:
 
 
 class Payment:
-    def __init__(self, user_id, account_number, cvv2, expiration_date, password):
+    def __init__(self, user_id, account_number, cvv2, expiration_date,
+                 password):
         self.user = user_id
         self.account_number = account_number
         self.cvv2 = cvv2
@@ -398,7 +422,8 @@ class Payment:
             conn.close()
 
     @classmethod
-    def add_payment(cls, user_id, account_number, cvv2, expiration_date, password):
+    def add_payment(cls, user_id, account_number, cvv2, expiration_date,
+                    password):
         cls.payment_table_creation()
         conn = sqlite3.connect('ap_database.db')
         c = conn.cursor()
@@ -409,5 +434,4 @@ class Payment:
         conn.close()
         return cls(user_id, account_number, cvv2, expiration_date, password)
 
-    def payment(self):
-        pass
+
