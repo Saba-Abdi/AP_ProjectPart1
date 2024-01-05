@@ -7,17 +7,13 @@ clinic4 = Clinic.add_clinic("Dental Clinic", "321 Pine St", "333-999-8888", 0, F
 clinic5 = Clinic.add_clinic("Clinic C", "225 Main St", "231-824-9999", 0, True, False, True, False, 50, 0, 35, 0)
 clinic6 = Clinic.add_clinic("Clinic D", "128 Main St", "321-784-2316", 0, False, False, True, False, 0, 0, 95, 0)
 clinic7 = Clinic.add_clinic("Clinic E", "433 Main St", "222-979-7890", 0, True, True, True, True, 50, 65, 30, 32)
-clinic1.getting_clinic_availability()
-clinic2.getting_clinic_availability()
-clinic3.getting_clinic_availability()
-clinic4.getting_clinic_availability()
-clinic5.getting_clinic_availability()
-clinic6.getting_clinic_availability()
-clinic7.getting_clinic_availability()
-
 
 p1 = Payment.add_payment(1, 6037, 9, 605, 4545)
-i1 = Insurance.add_insurance('hel', '0930', 20)
+i1 = Insurance.add_insurance('iran', '954235', 20)
+i2 = Insurance.add_insurance('daneshjo', '789456', 35)
+i3 = Insurance.add_insurance('mehr', '125463', 41)
+i4 = Insurance.add_insurance('kosar', '234561', 25)
+i5 = Insurance.add_insurance('moalem', '546985', 20)
 
 doctor1 = User.sign_up('Luke Evans', 'luke58', 'l.evans@gmail.com', '58911958', 'doctor')
 doctor2 = User.sign_up('Mark Black', 'mark15', 'm.black@gmail.com', '1578578', 'doctor')

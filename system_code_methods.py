@@ -1,5 +1,7 @@
 import random
 from base_objects import *
+from new_appoitment import *
+
 
 def enter(situation):
     if situation == 1:
@@ -15,9 +17,6 @@ def enter(situation):
             print("Account successfully created!")
         else:
             print('User already exists!')
-
-        #situation = input('How can I help you? For sign-up enter 1 and for sign-in enter 2: ')
-        #return enter(int(situation))
     
     elif situation == 2:
         user_position = input('Please enter your position: ')
@@ -38,9 +37,12 @@ def enter(situation):
                     password = input('Please enter your password again:')
                 
                 print('Welcome to your account.')
-                    #if user_position == 'patient':
-                        #action = input('What do you wish to do? Current appointment, appointments history, or new appointment? ')
-            
+                if user_position == "patient":
+                    action2 = input(
+                        "What do wish to do? 1.Your current appointment  2. Your previous appoitments  3.Reserve a new appoitment ")
+                    if action2 == '3':
+                        return choose_service(user_position,username)
+
             # Opt
             elif sign_in_method.lower() == 'opt':
                 email = input('Please enter your email:')
@@ -52,6 +54,11 @@ def enter(situation):
                 print(f'Here is your password: {opt}')
                 opt_password = input('Please enter your opt password: ')
                 print("Login successful!")
+                if user_position == "patient":
+                    action2 = input(
+                        "What do wish to do? 1.Your current appointment  2. Your previous appoitments  3.Reserve a new appoitment ")
+                    if action2 == '3':
+                        return choose_service(user_position, username)
             
             else:
                 print('Invalid option for sign-in method.')
@@ -61,4 +68,4 @@ def enter(situation):
     
     else:
         print("Invalid option. Please enter 1 for sign-up or 2 for sign-in.")
-        #return enter(int(input("How can I help you? For sign-up enter 1 and for sign-in enter 2: ")))
+
