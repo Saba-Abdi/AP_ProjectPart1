@@ -1,6 +1,7 @@
 import random
 from base_objects import *
 from new_appoitment import *
+from Secretary import manoeuvre
 
 
 def enter(situation):
@@ -42,7 +43,9 @@ def enter(situation):
                         "What do wish to do? 1.Your current appointment  2. Your previous appoitments  3.Reserve a new appoitment ")
                     if action2 == '3':
                         return choose_service(user_position,username)
-
+                if user_position == 'secretary':
+                    request = int(input('How may I assist you today? Please enter: 1 to see current appiontments, 2 to cancel an appointment or 3 to increase the number of availabe beds of a clinic'))
+                    return manoeuvre(request)
             # Opt
             elif sign_in_method.lower() == 'opt':
                 email = input('Please enter your email:')
