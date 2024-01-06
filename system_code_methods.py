@@ -43,7 +43,7 @@ def enter(situation):
                         "What do wish to do? 1.Your current appointment  2. Your previous appoitments  3.Reserve a new appoitment ")
                     if action2 == '3':
                         return choose_service(user_position,username)
-                if user_position == 'secretary':
+                elif user_position == 'secretary':
                     request = int(input('How may I assist you today? Please enter: 1 to see current appiontments, 2 to cancel an appointment or 3 to increase the number of availabe beds of a clinic'))
                     return manoeuvre(request)
             # Opt
@@ -62,6 +62,9 @@ def enter(situation):
                         "What do wish to do? 1.Your current appointment  2. Your previous appoitments  3.Reserve a new appoitment ")
                     if action2 == '3':
                         return choose_service(user_position, username)
+                elif user_position == 'secretary':
+                    request = int(input('How may I assist you today? Please enter: 1 to see current appiontments, 2 to cancel an appointment or 3 to increase the number of availabe beds of a clinic'))
+                    return manoeuvre(request)
             
             else:
                 print('Invalid option for sign-in method.')

@@ -1,7 +1,7 @@
 import sqlite3
 import requests
 from datetime import datetime
-
+from prettytable import PrettyTable
 
 class User:
 
@@ -128,8 +128,25 @@ class User:
                 c.execute("UPDATE secretaries SET name = ? WHERE username = ?",
                           (new_value, username))
 
-    def meetings(self):
-        pass
+    @staticmethod
+    def meetings(user_id):
+        conn = sqlite3.connect('ap_database.db')
+        c = conn.cursor()
+        c.execute("""
+            SELECT a.reservation_date, a.clinic_id, d.name, p.name, a.payment_amount, a.service
+            FROM appointments a
+            JOIN doctors d ON a.doctor_id = d.user_id
+            JOIN patients p ON a.patient_id = p.user_id
+            WHERE a.patient_id = ?
+        """, (user_id,))
+        appointments = c.fetchall()
+        conn.close()
+        table = PrettyTable()
+        table.field_names = ["Reservation Date", "Clinic ID", "Doctor Name",
+                             "Patient Name", "Payment Amount", "Service"]
+        for appointment in appointments:
+            table.add_row(appointment)
+        print(table)
 
 
 class Clinic:
@@ -195,64 +212,51 @@ class Clinic:
                    heart, dental, plastic, gp_fee, heart_fee, dental_fee,
                    plastic_fee)
 
-    def update_clinic_info(cls, clinic_id, name=None, address=None, contact_info=None, availability=None, gp=None, heart=None, dental=None, plastic=None, gp_fee=None, heart_fee=None, dental_fee=None, plastic_fee=None):
+    def update_clinic_info(cls, clinic_id, name=None, address=None,
+                           contact_info=None, availability=None, gp=None,
+                           heart=None, dental=None, plastic=None, gp_fee=None,
+                           heart_fee=None, dental_fee=None, plastic_fee=None):
         conn = sqlite3.connect('ap_database.db')
         c = conn.cursor()
 
         if name is not None:
-            c.execute('UPDATE clinics SET name = ? WHERE clinic_id = ?', (name, clinic_id))
+            c.execute('UPDATE clinics SET name = ? WHERE clinic_id = ?',
+                      (name, clinic_id))
         if address is not None:
-            c.execute('UPDATE clinics SET address = ? WHERE clinic_id = ?', (address, clinic_id))
+            c.execute('UPDATE clinics SET address = ? WHERE clinic_id = ?',
+                      (address, clinic_id))
         if contact_info is not None:
-            c.execute('UPDATE clinics SET contact_info = ? WHERE clinic_id = ?', (contact_info, clinic_id))
+            c.execute('UPDATE clinics SET contact_info = ? WHERE clinic_id = ?',
+                      (contact_info, clinic_id))
         if availability is not None:
-            c.execute('UPDATE clinics SET beds_available = ? WHERE clinic_id = ?', (availability, clinic_id))
-   
+            c.execute(
+                'UPDATE clinics SET beds_available = ? WHERE clinic_id = ?',
+                (availability, clinic_id))
 
         conn.commit()
         conn.close()
 
-    def set_availability(self):
-        get_data_url = "http://127.0.0.1:5000/slots" 
-        response = requests.get(get_data_url)
+    @staticmethod
+    def view_appointments(clinic_id):
+        conn = sqlite3.connect('ap_database.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM appointments WHERE clinic_id = ?',
+                       (clinic_id,))
+        rows = cursor.fetchall()
+        conn.close()
 
-        if response.status_code != 200:
-            raise Exception("The request was not successful!")
-        else:
-            json_data = response.json()
-
-        availability = json_data.get(str(self.clinic_id))  
-
-        if availability is not None:
-            conn = sqlite3.connect('ap_database.db')
-            c = conn.cursor()
-            c.execute('UPDATE clinics SET beds_available = ? WHERE clinic_id = ?', (availability, self.clinic_id))
-            conn.commit()
-            conn.close()
-
-
-    def view_appointments(self):
-        get_data_url = "http://127.0.0.1:5000/appointments"  
-        response = requests.get(get_data_url)
-
-        if response.status_code != 200:
-            raise Exception("The request was not successful!")
-        else:
-            json_data = response.json()
-
-        appointments = json_data.get(str(self.clinic_id)) 
-
-        if appointments is not None:
-            for appointment in appointments:
-                print(f"Appointment ID: {appointment['id']}, Patient: {appointment['patient_name']}, Date: {appointment['date']}, Time: {appointment['time']}")
-        else:
-            print("No appointments found for this clinic.")
-
+        table = PrettyTable()
+        table.field_names = ["Appointment ID", "Status", "Reservation Date",
+                             "Payment Amount", "Patient ID", "Clinic ID",
+                             "Doctor ID", "Insurance ID", "Payment ID"]
+        for row in rows:
+            table.add_row(row)
+        print(table)
 
 
 class Appointment:
     def __init__(self, appointment_id, status, reservation_date, payment_amount,
-                 patient_id, clinic_id, doctor_id, insurance_id, payment_id):
+                 patient_id, clinic_id, doctor_id, insurance_id, payment_id, service):
         self.status = status
         self.appointment_id = appointment_id
         self.reservation_date = reservation_date
@@ -262,6 +266,7 @@ class Appointment:
         self.doctor_id = doctor_id
         self.insurance_id = insurance_id
         self.payment_id = payment_id
+        self.service = service
 
     @staticmethod
     def appointment_table_creation():
@@ -281,6 +286,7 @@ class Appointment:
                             doctor_id INTEGER,
                             insurance_id INTEGER,
                             payment_id INTEGER,
+                            service VARCHAR(255),
                             FOREIGN KEY(patient_id) REFERENCES patients(user_id),
                             FOREIGN KEY(clinic_id) REFERENCES clinics(clinic_id),
                             FOREIGN KEY(doctor_id) REFERENCES doctors(user_id),
@@ -294,19 +300,20 @@ class Appointment:
     @classmethod
     def add_appointment(cls, status, reservation_date, payment_amount,
                         patient_id, clinic_id, doctor_id, insurance_id,
-                        payment_id):
+                        payment_id, service):
         cls.appointment_table_creation()
         conn = sqlite3.connect('ap_database.db')
         c = conn.cursor()
         c.execute(
-            'INSERT INTO appointments (status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id) VALUES (?,?,?,?,?,?,?,?)',
+            'INSERT INTO appointments (status, reservation_date,payment_amount,patient_id,clinic_id,doctor_id,insurance_id,payment_id, service) VALUES (?,?,?,?,?,?,?,?,?)',
             (status, reservation_date, payment_amount, patient_id, clinic_id,
-             doctor_id, insurance_id, payment_id))
+             doctor_id, insurance_id, payment_id, service))
         appointment_id = c.lastrowid
         conn.commit()
         conn.close()
         return cls(appointment_id, status, reservation_date, payment_amount,
-                   patient_id, clinic_id, doctor_id, insurance_id, payment_id)
+                   patient_id, clinic_id, doctor_id, insurance_id, payment_id,
+                   service)
 
     @staticmethod
     def register_appointment(clinic_id, reserved_slots, database):
@@ -333,11 +340,26 @@ class Appointment:
         else:
             print(f"Error: {response.status_code}")
 
-    def cancel_appointment(self):
-        pass
+    @staticmethod
+    def cancel_appointment(clinic_id, reserved=1):
+        url = 'http://127.0.0.1:5000/reserve'
+        data = {'id': clinic_id, 'reserved': reserved}
+        response = requests.post(url, json=data)
 
-    def reschedule_appointment(self):
-        pass
+        if response.status_code == 200:
+            json_data = response.json()
+            remaining_slots = json_data['remaining_slots']
+            print(f"Clinic {clinic_id} has {remaining_slots}")
+
+        else:
+            print(f"Error: {response.status_code}")
+
+    def reschedule_appointment(self, clinic_id, reserved_slots, database):
+        # First, cancel the appointment
+        self.cancel_appointment(clinic_id, reserved_slots)
+
+        # Then, register the appointment again
+        self.register_appointment(clinic_id, reserved_slots, database)
 
 
 class Notification:
@@ -433,5 +455,3 @@ class Payment:
         conn.commit()
         conn.close()
         return cls(user_id, account_number, cvv2, expiration_date, password)
-
-

@@ -172,7 +172,7 @@ def check_price(position, username, doctor, clinic, service, price, insurance):
             result = c.fetchone()
             conn.close()
             payment_id = result[0]
-            Appointment.add_appointment("reserved", date, price, user_id, clinic, doctor, insurance, payment_id)
+            Appointment.add_appointment("reserved", date, price, user_id, clinic, doctor, insurance, payment_id, service)
 
             conn = sqlite3.connect('ap_database.db')
             c = conn.cursor()
