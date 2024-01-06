@@ -2,6 +2,7 @@ import sqlite3
 import requests
 from datetime import datetime
 from prettytable import PrettyTable
+import time
 
 
 class User:
