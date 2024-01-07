@@ -11,8 +11,14 @@ def manoeuvre(request):
         if doc == 'all' and hosp == 'all':
             c.execute("SELECT * FROM appointments")
             results = c.fetchall()
-            for res in results:
-                print(res)
+            table = PrettyTable()
+            table.field_names = ["Appointment ID", "Status", "Reservation Date",
+                                 "Payment Amount", "Patient ID", "Clinic ID",
+                                 "Doctor ID", "Insurance ID", "Payment ID",
+                                 "Service"]
+            for row in results:
+                table.add_row(row)
+            print(table)
         elif doc != 'all' and hosp =='all':
             doc = int(doc)
             c.execute('SELECT * FROM appointments WHERE doctor_id = ?', (doc,))
@@ -25,6 +31,7 @@ def manoeuvre(request):
             for row in results:
                 table.add_row(row)
             print(table)
+
         elif doc == 'all' and hosp != 'all':
             hosp = int(hosp)
             c.execute('SELECT * FROM appointments WHERE clinic_id = ?', (hosp,))

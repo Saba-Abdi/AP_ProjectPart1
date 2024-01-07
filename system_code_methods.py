@@ -2,6 +2,7 @@ import random
 from base_objects import *
 from new_appoitment import *
 from Secretary import manoeuvre
+from previous_current_appointments import previous_appointments, current_appointment
 
 
 def enter(situation):
@@ -42,7 +43,11 @@ def enter(situation):
                     action2 = input(
                         "What do wish to do? 1.Your current appointment  2. Your previous appoitments  3.Reserve a new appoitment ")
                     if action2 == '3':
-                        return choose_service(user_position,username)
+                        return choose_service(user_position, username)
+                    elif action2 == '2':
+                        return previous_appointments(user[0])
+                    elif action2 == '1':
+                        return current_appointment(user[0])
                 elif user_position == 'secretary':
                     request = int(input('How may I assist you today? Please enter: 1 to see current appiontments, 2 to cancel an appointment or 3 to increase the number of availabe beds of a clinic'))
                     return manoeuvre(request)
@@ -62,6 +67,10 @@ def enter(situation):
                         "What do wish to do? 1.Your current appointment  2. Your previous appoitments  3.Reserve a new appoitment ")
                     if action2 == '3':
                         return choose_service(user_position, username)
+                    elif action2 == '2':
+                        return previous_appointments(user[0])
+                    elif action2 == '1':
+                        return current_appointment(user[0])
                 elif user_position == 'secretary':
                     request = int(input('How may I assist you today? Please enter: 1 to see current appiontments, 2 to cancel an appointment or 3 to increase the number of availabe beds of a clinic'))
                     return manoeuvre(request)
