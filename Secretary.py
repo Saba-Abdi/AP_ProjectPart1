@@ -1,3 +1,4 @@
+from base_objects import *
 import sqlite3
 from prettytable import PrettyTable
 conn = sqlite3.connect('ap_database.db')
@@ -55,11 +56,19 @@ def manoeuvre(request):
                 table.add_row(row)
             print(table)
     elif request == 2:
-        id = input('Please enter ID of the appointment which you wish to delete')
+        appointment_id = input('Please enter ID of the appointment which you wish to delete')
+        clinic_id = input('Please enter ID of the appointment which you wish to delete')
+        Appointment.cancel_appointment(clinic_id,1)
         c.execute(
-            'DELETE FROM appointments WHERE appointment_id = ?', (id)
+            'DELETE FROM appointments WHERE appointment_id = ?', (appointment_id)
         )
+        c.execute("""
+                    UPDATE clinics
+                    SET beds_available = beds_available + ?
+                    WHERE clinic_id = ?
+                """, (1, clinic_id))
         conn.commit()
+
     elif request == 3:
         clinic_name = input('Please enter the name of the clinic for which you wish to increase the number of available beds.')
         num = int(input('How many more beds?'))

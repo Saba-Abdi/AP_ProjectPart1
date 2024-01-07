@@ -26,30 +26,30 @@ class User:
                 c.execute('''
                             CREATE TABLE IF NOT EXISTS patients (
                                 user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                name VARCHAR(255),
-                                username VARCHAR(255) UNIQUE,
-                                email VARCHAR(255) UNIQUE,
-                                password VARCHAR(255)
+                                name VARCHAR(255) NOT NULL,
+                                username VARCHAR(255) NOT NULL UNIQUE,
+                                email VARCHAR(255) NOT NULL UNIQUE,
+                                password VARCHAR(255) NOT NULL
                             )
                         ''')
             elif user_position == 'doctor':
                 c.execute('''
                             CREATE TABLE IF NOT EXISTS doctors (
                                 user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                name VARCHAR(255),
-                                username VARCHAR(255) UNIQUE,
-                                email VARCHAR(255) UNIQUE,
-                                password VARCHAR(255)
+                                name VARCHAR(255) NOT NULL,
+                                username VARCHAR(255) NOT NULL UNIQUE,
+                                email VARCHAR(255) NOT NULL UNIQUE,
+                                password VARCHAR(255) NOT NULL
                             )
                         ''')
             elif user_position == 'secretary':
                 c.execute('''
                             CREATE TABLE IF NOT EXISTS secretaries (
                                 user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                name VARCHAR(255),
-                                username VARCHAR(255) UNIQUE,
-                                email VARCHAR(255) UNIQUE,
-                                password VARCHAR(255)
+                                name NOT NULL VARCHAR(255),
+                                username VARCHAR(255) NOT NULL UNIQUE,
+                                email VARCHAR(255) NOT NULL UNIQUE,
+                                password VARCHAR(255) NOT NULL
                             )
                         ''')
             conn.commit()
@@ -178,18 +178,18 @@ class Clinic:
             c.execute('''
                         CREATE TABLE clinics (
                             clinic_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            name VARCHAR(255),
-                            address VARCHAR(511),
-                            contact_info INTEGER UNIQUE,
-                            beds_available INTEGER,
-                            gp BOOLEAN,
-                            heart BOOLEAN,
-                            dental BOOLEAN,
-                            plastic BOOLEAN,
-                            gp_fee INTEGER,
-                            heart_fee INTEGER,
-                            dental_fee INTEGER,
-                            plastic_fee INTEGER
+                            name VARCHAR(255) NOT NULL,
+                            address VARCHAR(511) NOT NULL,
+                            contact_info INTEGER NOT NULL UNIQUE,
+                            beds_available INTEGER NOT NULL,
+                            gp BOOLEAN NOT NULL,
+                            heart BOOLEAN NOT NULL,
+                            dental BOOLEAN NOT NULL,
+                            plastic BOOLEAN NOT NULL,
+                            gp_fee INTEGER NOT NULL,
+                            heart_fee INTEGER NOT NULL,
+                            dental_fee INTEGER NOT NULL,
+                            plastic_fee INTEGER NOT NULL
                         )
                     ''')
             conn.commit()
@@ -271,15 +271,15 @@ class Appointment:
             c.execute('''
                         CREATE TABLE appointments (
                             appointment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            status VARCHAR(255),
-                            reservation_date INTEGER,
-                            payment_amount INTEGER,
-                            patient_id INTEGER,
-                            clinic_id INTEGER,
-                            doctor_id INTEGER,
-                            insurance_id INTEGER,
-                            payment_id INTEGER,
-                            service VARCHAR(255),
+                            status VARCHAR(255) NOT NULL,
+                            reservation_date INTEGER NOT NULL,
+                            payment_amount INTEGER NOT NULL,
+                            patient_id INTEGER NOT NULL,
+                            clinic_id INTEGER NOT NULL,
+                            doctor_id INTEGER NOT NULL,
+                            insurance_id INTEGER NOT NULL,
+                            payment_id INTEGER NOT NULL,
+                            service VARCHAR(255) NOT NULL,
                             FOREIGN KEY(patient_id) REFERENCES patients(user_id),
                             FOREIGN KEY(clinic_id) REFERENCES clinics(clinic_id),
                             FOREIGN KEY(doctor_id) REFERENCES doctors(user_id),
@@ -384,9 +384,9 @@ class Insurance:
             c.execute('''
                         CREATE TABLE insurances (
                             insurance_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            name VARCHAR(255),
-                            contact_info INTEGER UNIQUE,
-                            coverage INTEGER
+                            name VARCHAR(255) NOT NULL,
+                            contact_info INTEGER NOT NULL UNIQUE,
+                            coverage INTEGER NOT NULL
                         )
                     ''')
             conn.commit()
@@ -424,11 +424,11 @@ class Payment:
             c.execute('''
                         CREATE TABLE payments (
                             payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            user_id INTEGER,
-                            account_number INTEGER,
-                            cvv2 INTEGER,
-                            expiration_date INTEGER,
-                            password INTEGER
+                            user_id INTEGER NOT NULL,
+                            account_number INTEGER NOT NULL,
+                            cvv2 INTEGER NOT NULL,
+                            expiration_date INTEGER NOT NULL,
+                            password INTEGER NOT NULL
                         )
                     ''')
             conn.commit()
