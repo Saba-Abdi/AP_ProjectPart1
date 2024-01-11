@@ -57,8 +57,7 @@ def manoeuvre(request):
             print(table)
     elif request == 2:
         appointment_id = input('Please enter ID of the appointment which you wish to delete')
-        clinic_id = input('Please enter ID of the appointment which you wish to delete')
-        Appointment.cancel_appointment(clinic_id,1)
+        clinic_id = input('Please enter ID of the clinic which you wish to delete')
         c.execute(
             'DELETE FROM appointments WHERE appointment_id = ?', (appointment_id)
         )
@@ -68,6 +67,7 @@ def manoeuvre(request):
                     WHERE clinic_id = ?
                 """, (1, clinic_id))
         conn.commit()
+        print("The appointment is cancelled")
 
     elif request == 3:
         clinic_name = input('Please enter the name of the clinic for which you wish to increase the number of available beds.')
@@ -78,3 +78,4 @@ def manoeuvre(request):
             WHERE name = ?
         """, (num, clinic_name))
         conn.commit()
+        print("The availability got increased")
