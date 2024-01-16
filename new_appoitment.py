@@ -157,8 +157,9 @@ def payment_amount(position, username, doctor, clinic, service, insurance=None):
 
     # If the user doesn't have insurance
     else:
+        service_fee_column = f"{service}_fee"
         # Execute a SQL query to retrieve the service fee of the clinic
-        c.execute('SELECT service_fee FROM clinics WHERE clinic_id = ?',
+        c.execute(f'SELECT {service_fee_column} FROM clinics WHERE clinic_id = ?',
                   (clinic,))
         service_fee = c.fetchone()
 
@@ -220,8 +221,7 @@ def check_price(position, username, doctor, clinic, service, price, insurance):
                                 password)
             time.sleep(5)
             print("Payment was successful")
-            print("Your appointment is reserved")
-            Notification.send_notification(user_id)
+            Notification.reserve_notification(user_id)
             current_datetime = datetime.now()
             date = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
             conn = sqlite3.connect('ap_database.db')

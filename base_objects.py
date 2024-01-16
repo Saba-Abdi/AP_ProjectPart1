@@ -5,7 +5,6 @@ from datetime import datetime
 from prettytable import PrettyTable
 
 
-
 # Defining the User class
 class User:
     # Initializer / Instance attributes
@@ -482,14 +481,14 @@ class Appointment:
 
 # Defining the Notification class
 class Notification:
-    def __init__(self, user_id, message, date_time):
+    def __init__(self, message, date_time, user_id=None):
         self.user_id = user_id
         self.message = message
         self.date_time = date_time
 
     # Class method to send a notification
     @classmethod
-    def send_notification(cls, user_id):
+    def reserve_notification(cls, user_id):
         # Define the message and current date and time
         message = f"Dear user {user_id}, your appointment is reserved."
         current_datetime = datetime.now()
@@ -497,6 +496,21 @@ class Notification:
         print(message)
         return cls(user_id, message, date)
 
+    @classmethod
+    def increase_notification(cls, clinic_name, number):
+        current_datetime = datetime.now()
+        date = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        message = f"Dear user, you successfully increased availability of {clinic_name} by the number {number}. "
+        print(message)
+        return cls(message, date)
+
+    @classmethod
+    def cancel_notification(cls, appointment_id):
+        current_datetime = datetime.now()
+        date = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        message = f"The appointment {appointment_id} is cancelled."
+        print(message)
+        return cls(message, date)
 
 # Defining the Insurance class
 class Insurance:

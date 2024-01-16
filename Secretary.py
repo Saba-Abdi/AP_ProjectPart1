@@ -119,7 +119,7 @@ def manoeuvre(request):
 
         # Commit the changes
         conn.commit()
-        print("The appointment is cancelled")
+        Notification.cancel_notification(appointment_id)
 
     # If the request is 3, increase the number of available beds in a clinic
     elif request == 3:
@@ -136,4 +136,5 @@ def manoeuvre(request):
 
         # Commit the changes
         conn.commit()
-        print("The availability got increased")
+        # Sending the notification
+        Notification.increase_notification(clinic_name, num)
